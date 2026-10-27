@@ -1,4 +1,5 @@
 import Promotion from "../models/Promotion.js";
+import { importPromotionsFromExcel as importExcelFile } from "../services/promotionExcelService.js";
 import { PROMOTION_STATUS } from "../utils/const.js";
 
 const statusLabels = {
@@ -38,6 +39,21 @@ export async function createPromotion(req, res) {
   });
 
   res.status(201).json(serializePromotion(promotion));
+}
+
+export async function importPromotionsFromExcel(req, res) {
+  if (req.user.role !== "solicitante") {
+    return res.status(403).json({
+      error: "Solo los solicitantes pueden importar promociones",
+    });
+  }
+
+  if (!req.file) {
+    return res.status(400).json({ error: "Selecciona un archivo .xlsx" });
+  }
+
+  const result = await importExcelFile(req.file.buffer, req.user._id);
+  res.json(result);
 }
 
 export async function updatePromotion(req, res) {

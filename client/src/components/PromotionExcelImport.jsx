@@ -54,7 +54,11 @@ function PromotionExcelImport({ userId, onImportComplete }) {
         onImportComplete();
       }
     } catch (importError) {
-      setError(importError.message || "No se pudo procesar el archivo.");
+      setError(
+        importError.response?.data?.error ||
+          importError.message ||
+          "No se pudo procesar el archivo."
+      );
     } finally {
       setIsImporting(false);
       input.value = "";
@@ -67,7 +71,8 @@ function PromotionExcelImport({ userId, onImportComplete }) {
         <div>
           <h2>Carga desde Excel</h2>
           <p className="field-hint">
-            Descarga la plantilla y sube un archivo .xlsx.
+            Descarga la plantilla y sube un archivo .xlsx. El servidor valida y
+            guarda las filas válidas.
           </p>
         </div>
         <div className="excel-import__actions">
@@ -92,7 +97,7 @@ function PromotionExcelImport({ userId, onImportComplete }) {
         </div>
       </div>
 
-      {isImporting && <Message>Validando e importando filas...</Message>}
+      {isImporting && <Message>El servidor está validando e importando filas...</Message>}
       {error && <Message type="error">{error}</Message>}
 
       {result && (

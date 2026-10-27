@@ -1,5 +1,15 @@
 // Convierte los errores conocidos en respuestas claras para el cliente.
 export function errorHandler(err, _req, res, _next) {
+  if (err.name === "MulterError") {
+    if (err.code === "LIMIT_FILE_SIZE") {
+      return res.status(413).json({
+        error: "El archivo no puede superar los 5 MB",
+      });
+    }
+
+    return res.status(400).json({ error: "No se pudo recibir el archivo" });
+  }
+
   if (err.name === "ValidationError") {
     const details = Object.fromEntries(
       Object.entries(err.errors).map(([field, validationError]) => [
